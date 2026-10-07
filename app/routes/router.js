@@ -22,7 +22,14 @@ router.get('/', (req,res) =>{
     res.render("pages/index")
 })
 
-router.post('/index', (req,res)=>{
+router.post('/index',body('email').notEmpty().withMessage('Preencha o email').bail().isEmail(),body('assunto').notEmpty().withMessage('Preencha o assunto'),body('mensagem').notEmpty().withMessage('Escreva sua mensagem') ,(req,res)=>{
+    validacaoArray = validationResult[req].array();
+
+     if(validacaoArray.length >= 1){
+        console.log(validacaoArray)
+        return
+     }
+
     const mailOptions = {
         from: process.env.EMAIL_USER,
         to: req.body.email,
@@ -35,7 +42,7 @@ router.post('/index', (req,res)=>{
             console.log(error);
         }else{
             console.log(info);
-            console.log("Email enviado.")
+            res.send('Email enviado com sucesso!')
         }
     })
 })
