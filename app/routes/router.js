@@ -22,12 +22,14 @@ router.get('/', (req,res) =>{
     res.render("pages/index")
 })
 
-router.post('/index',body('email').notEmpty().withMessage('Preencha o email').bail().isEmail(),body('assunto').notEmpty().withMessage('Preencha o assunto'),body('mensagem').notEmpty().withMessage('Escreva sua mensagem') ,(req,res)=>{
-    validacaoArray = validationResult[req].array();
+router.post('/index',body('nome').notEmpty().withMessage('Preencha o nome').bail().isLength({min:3}).withMessage('Senha de no minimo 3 caracteres'),body('email').notEmpty().withMessage('Preencha o email').bail().isEmail(),body('telefone'),body('telefone').notEmpty(),body('assunto').notEmpty().withMessage('Preencha o assunto'),body('mensagem').notEmpty().withMessage('Escreva sua mensagem'),(req,res)=>{
+    validacaoArray = validationResult(req).array();
+    validacaoArray = validationResult(req).array();
 
      if(validacaoArray.length >= 1){
-        console.log(validacaoArray)
-        return
+        for(let i = 0; i < 4; i++){
+            console.log(validacaoArray[i].msg)
+        }
      }
 
     const mailOptions = {
