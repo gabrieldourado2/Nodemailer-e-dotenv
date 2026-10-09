@@ -22,21 +22,30 @@ router.get('/', (req,res) =>{
     res.render("pages/index")
 })
 
-router.post('/index',body('nome').notEmpty().withMessage('Preencha o nome').bail().isLength({min:3}).withMessage('Senha de no minimo 3 caracteres'),body('email').notEmpty().withMessage('Preencha o email').bail().isEmail(),body('telefone'),body('telefone').notEmpty(),body('assunto').notEmpty().withMessage('Preencha o assunto'),body('mensagem').notEmpty().withMessage('Escreva sua mensagem'),(req,res)=>{
+router.post('/index',
+body('nome').notEmpty().withMessage('Preencha o nome').bail().isLength({min:3}).withMessage('Nome de no minimo 3 caracteres'),
+body('email').notEmpty().withMessage('Preencha o email').bail().isEmail().withMessage('Isso não é um email válido'),
+body('telefone').notEmpty().withMessage('Preencha o telefone').bail().isLength({min:7, max:11}).withMessage('Número de no minimo de 7 caracteres, máximo de 11 caracteres'),
+body('assunto').notEmpty().withMessage('Preencha o assunto'),
+body('mensagem').notEmpty().withMessage('Escreva sua mensagem'),
+(req,res)=>{
     validacaoArray = validationResult(req).array();
-    validacaoArray = validationResult(req).array();
+    var erros = "";
+    var mensagem = 'Nome: ' + req.body.nome + '   ' +'Mensagem: ' + req.body.mensagem + '   ' + 'Telefone: ' + req.body.telefone;
 
-     if(validacaoArray.length >= 1){
-        for(let i = 0; i < 4; i++){
-            console.log(validacaoArray[i].msg)
+     if(validacaoArray.length >= 1){ //verifica se tem erro
+        for(let i = 0; i < validacaoArray.length; i++){ //percorre os erro
+            erros += `${validacaoArray[i].msg}<br>` //add os erro na variavel vazia
         }
+        res.send(erros) //printa os erro
+        return
      }
 
     const mailOptions = {
         from: process.env.EMAIL_USER,
         to: req.body.email,
         subject: req.body.assunto,
-        text: req.body.mensagem,
+        text: mensagem
     }
 
     transporter.sendMail(mailOptions, (error, info) =>{
